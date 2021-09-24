@@ -1,9 +1,10 @@
 import 'package:sentry/sentry.dart';
 import 'package:zooper_flutter_logging/zooper_flutter_logging.dart';
 
+/// A wrapper class which writes the log to [Sentry]
+///
+/// see: https://sentry.io/
 class SentryLogWriter extends LogWriter {
-  SentryLogWriter();
-
   static Future<SentryLogWriter> create(String dsn) async {
     var writer = SentryLogWriter();
     await Sentry.init((options) => {
@@ -14,7 +15,7 @@ class SentryLogWriter extends LogWriter {
   }
 
   @override
-  Future writeAsync(String message) async {
-    await Sentry.captureMessage(message);
+  Future writeAsync(String message) {
+    return Sentry.captureMessage(message);
   }
 }
