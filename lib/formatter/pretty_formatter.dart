@@ -1,16 +1,18 @@
 import 'package:zooper_flutter_logging/formatter/log_formatter.dart';
 import 'package:zooper_flutter_logging/logger/log_level.dart';
+import 'package:zooper_flutter_core/zooper_flutter_core.dart';
 
+/// This is an example class of how to implement a log-formatter.
 class PrettyFormatter extends LogFormatter {
-  static const topLeftCorner = '┌';
-  static const bottomLeftCorner = '└';
-  static const middleCorner = '├';
-  static const verticalLine = '│';
-  static const doubleDivider = '─';
+  static const _topLeftCorner = '┌';
+  static const _bottomLeftCorner = '└';
+  static const _middleCorner = '├';
+  static const _verticalLine = '│';
+  static const _doubleDivider = '─';
 
-  static const newLine = '\n';
+  static const _newLine = '\n';
 
-  static final levelEmojis = {
+  static final _levelEmojis = {
     LogLevel.verbose: '',
     LogLevel.debug: '🐛',
     LogLevel.info: '💡',
@@ -45,16 +47,7 @@ class PrettyFormatter extends LogFormatter {
   final int stackTraceBeginIndex;
   final int errorMethodCount;
   final int lineLength;
-  final bool colors;
   final bool printEmojis;
-
-  /// To prevent ascii 'boxing' of any log [Level] include the level in map for excludeBox,
-  /// for example to prevent boxing of [Level.verbose] and [Level.info] use excludeBox:{Level.verbose:true, Level.info:true}
-  final Map<LogLevel, bool> excludeBox;
-
-  /// To make the default for every level to prevent boxing entirely set [noBoxingByDefault] to true
-  /// (boxing can still be turned on for some levels by using something like excludeBox:{Level.error:false} )
-  final bool noBoxingByDefault;
 
   late String _topBorder;
   late String _middleBorder;
@@ -64,19 +57,16 @@ class PrettyFormatter extends LogFormatter {
     this.stackTraceBeginIndex = 0,
     this.errorMethodCount = 8,
     this.lineLength = 120,
-    this.colors = true,
     this.printEmojis = true,
-    this.excludeBox = const {},
-    this.noBoxingByDefault = false,
   }) {
     var doubleDividerLine = StringBuffer();
     for (var i = 0; i < lineLength - 1; i++) {
-      doubleDividerLine.write(doubleDivider);
+      doubleDividerLine.write(_doubleDivider);
     }
 
-    _topBorder = '$topLeftCorner$doubleDividerLine';
-    _middleBorder = '$middleCorner$doubleDividerLine';
-    _bottomBorder = '$bottomLeftCorner$doubleDividerLine';
+    _topBorder = '$_topLeftCorner$doubleDividerLine';
+    _middleBorder = '$_middleCorner$doubleDividerLine';
+    _bottomBorder = '$_bottomLeftCorner$doubleDividerLine';
   }
 
   @override
@@ -88,33 +78,13 @@ class PrettyFormatter extends LogFormatter {
     return _format(
       level,
       message,
-      _getTime(),
+      DateTime.now().toIso8601(),
       stackTraceStr,
     );
   }
 
-  String _getTime() {
-    String _threeDigits(int n) {
-      if (n >= 100) return '$n';
-      if (n >= 10) return '0$n';
-      return '00$n';
-    }
-
-    String _twoDigits(int n) {
-      if (n >= 10) return '$n';
-      return '0$n';
-    }
-
-    var now = DateTime.now();
-    var h = _twoDigits(now.hour);
-    var min = _twoDigits(now.minute);
-    var sec = _twoDigits(now.second);
-    var ms = _threeDigits(now.millisecond);
-    return '$h:$min:$sec.$ms';
-  }
-
   String _formatStackTrace(StackTrace stackTrace) {
-    var lines = stackTrace.toString().split(newLine);
+    var lines = stackTrace.toString().split(_newLine);
     if (stackTraceBeginIndex > 0 && stackTraceBeginIndex < lines.length - 1) {
       lines = lines.sublist(stackTraceBeginIndex);
     }
@@ -133,7 +103,7 @@ class PrettyFormatter extends LogFormatter {
     if (formatted.isEmpty) {
       return '';
     } else {
-      return formatted.join(newLine);
+      return formatted.join(_newLine);
     }
   }
 
@@ -169,37 +139,37 @@ class PrettyFormatter extends LogFormatter {
     String? time,
     String? stacktrace,
   ) {
-    List<String> buffer = [];
+    List<String> lineBuffer = [];
 
-    buffer.add(_topBorder);
+    lineBuffer.add(_topBorder);
 
     // The time
     if (time != null) {
-      buffer.add('$verticalLine $time');
-      buffer.add(_middleBorder);
+      lineBuffer.add('$_verticalLine $time');
+      lineBuffer.add(_middleBorder);
     }
 
     // The message
     var emoji = _getEmoji(level);
-    for (var line in message.split(newLine)) {
-      buffer.add('$verticalLine $emoji $line');
+    for (var line in message.split(_newLine)) {
+      lineBuffer.add('$_verticalLine $emoji $line');
     }
-    buffer.add(_middleBorder);
+    lineBuffer.add(_middleBorder);
 
     // The StackTrace
     if (stacktrace != null) {
-      for (var line in stacktrace.split(newLine)) {
-        buffer.add('$verticalLine $line');
+      for (var line in stacktrace.split(_newLine)) {
+        lineBuffer.add('$_verticalLine $line');
       }
     }
-    buffer.add(_bottomBorder);
+    lineBuffer.add(_bottomBorder);
 
-    return buffer.join(newLine);
+    return lineBuffer.join(_newLine);
   }
 
   String _getEmoji(LogLevel level) {
     if (printEmojis) {
-      return levelEmojis[level]!;
+      return _levelEmojis[level]!;
     } else {
       return '';
     }

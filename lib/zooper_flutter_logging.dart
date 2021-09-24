@@ -5,6 +5,7 @@ export 'logger/logger.dart';
 export 'logger/log_level.dart';
 
 // Writer
+export 'writer/console_log_writer.dart';
 export 'writer/log_writer.dart';
 export 'writer/sentry_log_writer.dart';
 
