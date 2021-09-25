@@ -1,6 +1,6 @@
 name: zooper_flutter_logging
 description: An extensible logging library which provides containers to implement custom logging logic fast 
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/zooper-lib/
 
 environment:
